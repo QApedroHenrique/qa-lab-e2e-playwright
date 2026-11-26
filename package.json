@@ -1,0 +1,43 @@
+{
+  "name": "qa-lab-e2e-playwright",
+  "version": "1.0.0",
+  "description": "Automação E2E com Playwright + TypeScript no Sauce Demo: Page Objects, desktop e mobile, acessibilidade, defeitos documentados e CI.",
+  "scripts": {
+    "test": "playwright test",
+    "test:chromium": "playwright test --project=chromium",
+    "test:mobile": "playwright test --project=mobile-chrome --project=mobile-safari",
+    "test:smoke": "playwright test --grep @smoke --project=chromium",
+    "test:ui": "playwright test --ui",
+    "relatorio": "playwright show-report",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "docs:verificar": "node scripts/verificar-rastreabilidade.mjs"
+  },
+  "author": "Pedro Henrique Barbosa dos Santos",
+  "license": "MIT",
+  "type": "commonjs",
+  "devDependencies": {
+    "@axe-core/playwright": "^4.14.1",
+    "@eslint/js": "^10.0.1",
+    "@playwright/test": "^1.65.1",
+    "@types/node": "^26.6.11",
+    "eslint": "^10.15.0",
+    "eslint-plugin-playwright": "^2.12.2",
+    "typescript": "~6.0.0",
+    "typescript-eslint": "^8.74.0"
+  },
+  "private": true,
+  "engines": {
+    "node": ">=20"
+  },
+  "keywords": [
+    "qa",
+    "e2e",
+    "playwright",
+    "typescript",
+    "page-object",
+    "mobile",
+    "acessibilidade",
+    "github-actions"
+  ]
+}

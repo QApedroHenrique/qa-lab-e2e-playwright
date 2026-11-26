@@ -1,0 +1,118 @@
+name: E2E
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  schedule:
+    - cron: '0 9 * * *' # todo dia: o site é público e pode mudar sem aviso
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: e2e-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  qualidade:
+    name: Lint, tipos e rastreabilidade
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: ESLint (inclui regras do eslint-plugin-playwright)
+        run: npm run lint
+      - name: TypeScript
+        run: npm run typecheck
+      - name: Rastreabilidade (testes x casos x defeitos)
+        run: npm run docs:verificar
+
+  e2e:
+    name: ${{ matrix.projeto }}
+    needs: qualidade
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { projeto: chromium, navegador: chromium }
+          - { projeto: firefox, navegador: firefox }
+          - { projeto: webkit, navegador: webkit }
+          - { projeto: mobile-chrome, navegador: chromium }
+          - { projeto: mobile-safari, navegador: webkit }
+    env:
+      PROJETO: ${{ matrix.projeto }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Instalar navegador
+        run: npx playwright install --with-deps ${{ matrix.navegador }}
+      - name: Testes
+        run: npx playwright test --project=${{ matrix.projeto }}
+      - name: Guardar resultado parcial
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: blob-${{ matrix.projeto }}
+          path: blob-report
+          retention-days: 3
+
+  relatorio:
+    name: Relatório consolidado
+    needs: e2e
+    if: ${{ !cancelled() }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: blob-*
+          path: todos-os-blobs
+          merge-multiple: true
+      - name: Juntar relatórios (HTML + JSON)
+        run: npx playwright merge-reports --reporter=html,json ./todos-os-blobs
+        env:
+          PLAYWRIGHT_JSON_OUTPUT_NAME: playwright-report/resultado.json
+      - name: Resumo da execução
+        run: node scripts/resumo-execucao.mjs playwright-report/resultado.json >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: relatorio-playwright
+          path: playwright-report
+          retention-days: 30
+      - name: Preparar GitHub Pages
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: playwright-report
+
+  publicar:
+    name: Publicar relatório no GitHub Pages
+    needs: relatorio
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - id: deploy
+        uses: actions/deploy-pages@v4
