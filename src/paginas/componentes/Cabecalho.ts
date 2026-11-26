@@ -11,8 +11,11 @@ export class Cabecalho {
   readonly linkSobre: Locator;
   readonly linkSair: Locator;
   readonly linkResetarEstado: Locator;
+  /** Painel do menu (biblioteca react-burger-menu, sem `data-test`: única exceção à regra de seletores). */
+  private readonly painelMenu: Locator;
 
   constructor(private readonly page: Page) {
+    this.painelMenu = page.locator('.bm-menu-wrap');
     this.titulo = page.getByTestId('title');
     this.linkCarrinho = page.getByTestId('shopping-cart-link');
     this.contadorCarrinho = page.getByTestId('shopping-cart-badge');
@@ -26,9 +29,12 @@ export class Cabecalho {
 
   /** Abre o menu lateral e espera ele estar na tela (`toque: true` usa tap, para celular). */
   async abrirMenu({ toque = false }: { toque?: boolean } = {}): Promise<void> {
-    // Um clique só: o botão alterna aberto/fechado, então repetir o clique pode FECHAR o menu
+    // O menu fechado só termina de "se esconder" (atributo `hidden`) ~0,3 s depois de carregar ou fechar.
+    // Abrir antes disso pode deixar o menu aberto porém invisível (BUG-12, intermitente).
+    // Aqui esperamos o menu assentar, como uma pessoa que não clica em menos de 300 ms.
+    await expect(this.painelMenu).toHaveAttribute('hidden');
     await (toque ? this.botaoAbrirMenu.tap() : this.botaoAbrirMenu.click());
-    await expect(this.linkSair).toBeInViewport({ timeout: 10_000 });
+    await expect(this.linkSair).toBeInViewport();
   }
 
   async fecharMenu(): Promise<void> {

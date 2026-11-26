@@ -9,7 +9,7 @@ com Page Objects, acessibilidade, defeitos reais documentados e CI no GitHub Act
 ![Playwright](https://img.shields.io/badge/Playwright-1.65-2EAD33?logo=playwright&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178C6?logo=typescript&logoColor=white)
 ![Testes](https://img.shields.io/badge/execuções-293-blue)
-![Defeitos](https://img.shields.io/badge/defeitos_documentados-11-red)
+![Defeitos](https://img.shields.io/badge/defeitos_documentados-12-red)
 ![Licença](https://img.shields.io/badge/licen%C3%A7a-MIT-blue)
 
 [**👋 Apresentação**](#-apresentação-sem-termos-técnicos) ·
@@ -35,8 +35,8 @@ carrinho, preenche os dados e finaliza a compra, conferindo cada detalhe pelo ca
 - 📱 **Funciona no celular?** A página cabe na tela e tudo funciona com o toque.
 - ♿ **Pessoas com deficiência conseguem usar?** Verificação automática de acessibilidade e login só com teclado.
 
-**E o mais importante para um QA: ele acha defeitos.** Foram encontrados e documentados **11 defeitos** no site,
-incluindo **3 com o usuário comum** (como conseguir "concluir" um pedido com o carrinho vazio). Cada defeito tem
+**E o mais importante para um QA: ele acha defeitos.** Foram encontrados e documentados **12 defeitos** no site,
+incluindo **4 que afetam qualquer usuário** (como conseguir "concluir" um pedido com o carrinho vazio). Cada defeito tem
 passo a passo para reproduzir e um teste que avisa se ele for corrigido. Veja o
 [**relatório de defeitos**](docs/relatorio-de-defeitos.md).
 
@@ -101,7 +101,9 @@ Um script no CI garante que todo `BUG-NN` citado nos testes está no [relatório
 No WebKit (Safari), o site às vezes perdia o texto digitado e cliques logo após a página aparecer, e trocava a URL
 antes de trocar a tela. Em vez de aumentar tempos de espera, cada causa foi isolada: os Page Objects esperam um
 elemento **exclusivo da página de destino** e `preencherCampo` confirma que o valor ficou no campo. Espera fixa
-(`waitForTimeout`) é proibida pelo ESLint. O processo está registrado em
+(`waitForTimeout`) é proibida pelo ESLint. Quando o CI marcou o menu como *instável* (passava só na 2ª tentativa),
+o trace mostrou uma corrida no próprio site: virou o [BUG-12](docs/relatorio-de-defeitos.md#bug-12--menu-reaberto-logo-após-fechar-fica-aberto-porém-invisível)
+em vez de um "retry" escondendo o problema. O processo está registrado em
 [`.claude/tasks/suite-e2e-saucedemo/questoes.md`](.claude/tasks/suite-e2e-saucedemo/questoes.md).
 </details>
 
@@ -192,6 +194,7 @@ flowchart LR
 
 O `/questionar` faz o papel de QA cético e **não concorda por padrão**: nesta suíte ele apontou um falso positivo na
 ordenação, a causa da instabilidade no WebKit e um teste de defeito que podia passar sem o bug ter sido corrigido, todos resolvidos.
+Um teste marcado como *instável* no CI virou investigação de trace e revelou um defeito intermitente do menu (BUG-12).
 Exemplo completo em [`.claude/tasks/suite-e2e-saucedemo/`](.claude/tasks/suite-e2e-saucedemo). O [`CLAUDE.md`](CLAUDE.md)
 guarda as regras fixas do projeto.
 

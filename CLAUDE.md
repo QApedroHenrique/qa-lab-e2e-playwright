@@ -26,12 +26,15 @@ Node 20+ · Playwright Test · TypeScript (strict) · @axe-core/playwright · ES
 
 ## Regras que não podem ser quebradas
 - Seletores: `getByTestId` (atributo `data-test`) ou `getByRole`. Nunca classe CSS ou XPath.
+  Única exceção: `.bm-menu-wrap` (painel da biblioteca de menu, sem `data-test`), em `Cabecalho.ts`.
 - Nada de `waitForTimeout`, `force: true` ou `if` dentro de teste (o ESLint barra).
 - Asserções web-first (`await expect(locator).toHave...`), que repetem até passar.
 - Teste não depende de outro: cada um ganha contexto novo (carrinho e sessão limpos).
 - Navegação em Page Object espera um elemento **exclusivo da página de destino** (o site troca a URL antes de trocar o DOM).
 - Valores monetários comparados em **centavos inteiros**.
 - Defeito do site = teste do comportamento CORRETO marcado com `test.fail` + linha no relatório de defeitos. Nunca "ajustar" o teste para o bug passar.
+- Teste *flaky* no CI se investiga pelo trace, não se resolve com mais tentativas. Defeito que depende de tempo vai
+  para o relatório como intermitente, sem teste automatizado (teste que falha ao acaso destrói a confiança na suíte).
 
 ## Convenções de teste
 - Todo teste tem ID no nome: `test('[CT-CHK-05] ...')`. Prefixos: LOG, INV, PRD, CAR, CHK, NAV, MOB, ACS, DEF.

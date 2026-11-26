@@ -23,7 +23,7 @@ foi reproduzido, isolado e transformado em teste automatizado que monitora o def
 | BUG-10 | "Reset App State" não atualiza os botões | `standard_user` | 🟢 | CT-DEF-10 |
 | BUG-11 | Produto inexistente mostra preço "$√-1" e botão de compra | `standard_user` | 🟢 | CT-DEF-11 |
 
-> BUG-09, BUG-10 e BUG-11 acontecem com o usuário **padrão**, ou seja, não fazem parte dos usuários "quebrados"
+> Há ainda o **BUG-12** (intermitente, no fim deste documento). BUG-09, BUG-10 e BUG-11 acontecem com o usuário **padrão**, ou seja, não fazem parte dos usuários "quebrados"
 > de propósito: foram achados explorando valores-limite (carrinho vazio, id inexistente) e transições de estado.
 
 ---
@@ -88,3 +88,22 @@ foi reproduzido, isolado e transformado em teste automatizado que monitora o def
 - **Passos:** `standard_user` → abrir `/inventory-item.html?id=999`.
 - **Esperado:** página de "produto não encontrado" sem preço nem botão de compra.
 - **Obtido:** título "ITEM NOT FOUND", preço "$√-1" e botão "Add to cart" ativo.
+
+---
+
+## Defeito intermitente (documentado, sem teste automatizado)
+
+### BUG-12 — Menu reaberto logo após fechar fica aberto, porém invisível
+- **Usuário:** qualquer · **Severidade:** 🟡 (o usuário fica sem acesso ao menu até recarregar) · **Mais frequente no Safari (WebKit)**
+- **Como foi achado:** o teste "o menu abre e fecha" aparecia como *instável* no CI (passava só na 2ª tentativa)
+  em WebKit e iPhone. Em vez de aceitar a nova tentativa, o trace da falha foi analisado.
+- **Causa observada:** o menu fechado recebe o atributo `hidden` por um temporizador, ~0,3 s depois de a página
+  carregar e ~0,4 s depois de o menu ser fechado. Se o menu for aberto dentro dessa janela, o temporizador
+  pode disparar depois da abertura: o estado fica "aberto" (`aria-hidden="false"`), mas o painel continua `hidden`.
+- **Passos:** abrir o menu → fechar → reabrir em menos de ~0,4 s.
+- **Esperado:** o menu aparece.
+- **Obtido (medido em 2026-11-26):** WebKit, sem carga: **3 de 5** tentativas com o menu invisível;
+  Chromium e Firefox, sem carga: 0 de 5; sob carga (vários testes em paralelo), também ocorre em Chromium e Firefox.
+- **Por que não há teste automatizado:** o defeito depende de tempo; qualquer teste dele seria instável em todos os
+  navegadores, e um teste que falha ao acaso faz o time parar de confiar na suíte. O defeito fica registrado aqui
+  e os Page Objects esperam o menu assentar antes de abrir (como uma pessoa faria), para não herdar a instabilidade.
