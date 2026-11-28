@@ -23,6 +23,10 @@ foi reproduzido, isolado e transformado em teste automatizado que monitora o def
 | BUG-10 | "Reset App State" não atualiza os botões | `standard_user` | 🟢 | CT-DEF-10 |
 | BUG-11 | Produto inexistente mostra preço "$√-1" e botão de compra | `standard_user` | 🟢 | CT-DEF-11 |
 
+> **BUG-13 a BUG-25** foram achados no [estudo de caso de QA manual](qa-manual/README.md) e estão em
+> [`qa-manual/bugs/`](qa-manual/bugs/). Eles não entram nesta tabela, que lista só os defeitos monitorados por teste
+> automatizado (o CI confere isso). Quando um deles for automatizado, a linha dele vem para cá.
+>
 > Há ainda o **BUG-12** (intermitente, no fim deste documento). BUG-09, BUG-10 e BUG-11 acontecem com o usuário **padrão**, ou seja, não fazem parte dos usuários "quebrados"
 > de propósito: foram achados explorando valores-limite (carrinho vazio, id inexistente) e transições de estado.
 

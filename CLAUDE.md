@@ -23,6 +23,9 @@ Node 20+ · Playwright Test · TypeScript (strict) · @axe-core/playwright · ES
 - `src/dados/` usuários, catálogo de produtos (oráculo), clientes e mensagens do site.
 - `tests/*.spec.ts` um arquivo por funcionalidade. `playwright.config.ts` define qual spec roda em qual projeto.
 - `docs/casos-de-teste.md` (CT-XXX-NN) e `docs/relatorio-de-defeitos.md` (BUG-NN).
+- `docs/qa-manual/` estudo de QA manual: casos CTM-XXX-NN (fora da verificação de rastreabilidade) e bugs
+  BUG-13+ em `bugs/`, um arquivo por bug. A tabela de `relatorio-de-defeitos.md` só lista bugs com teste
+  automatizado; ao automatizar um bug manual, mova a linha para lá.
 
 ## Regras que não podem ser quebradas
 - Seletores: `getByTestId` (atributo `data-test`) ou `getByRole`. Nunca classe CSS ou XPath.

@@ -9,12 +9,14 @@ com Page Objects, acessibilidade, defeitos reais documentados e CI no GitHub Act
 ![Playwright](https://img.shields.io/badge/Playwright-1.65-2EAD33?logo=playwright&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178C6?logo=typescript&logoColor=white)
 ![Testes](https://img.shields.io/badge/execuções-293-blue)
-![Defeitos](https://img.shields.io/badge/defeitos_documentados-12-red)
+![Defeitos](https://img.shields.io/badge/defeitos_automa%C3%A7%C3%A3o-12-red)
+![QA manual](https://img.shields.io/badge/defeitos_QA_manual-13-orange)
 ![Licença](https://img.shields.io/badge/licen%C3%A7a-MIT-blue)
 
 [**👋 Apresentação**](#-apresentação-sem-termos-técnicos) ·
 [**📊 Relatório de testes**](https://QApedroHenrique.github.io/qa-lab-e2e-playwright/) ·
 [**🐞 Defeitos encontrados**](docs/relatorio-de-defeitos.md) ·
+[**🔎 Estudo de QA manual**](docs/qa-manual/README.md) ·
 [**▶️ Como rodar**](#️-como-rodar)
 
 </div>
@@ -46,6 +48,21 @@ passo a passo, sem instalar nada.
 
 > 🔒 O site testado é o [Sauce Demo](https://www.saucedemo.com), uma loja **pública e fictícia** feita pela Sauce Labs
 > para treino de automação. Nenhum dado real é usado.
+
+---
+
+## 🔎 Além do robô: estudo de caso de QA manual
+
+O robô confirma o que foi previsto. Para achar o que **ninguém previu**, a mesma loja passou por um ciclo de QA
+manual: **plano de teste**, **5 sessões exploratórias**, **38 casos roteirizados**, **comparação visual contra uma
+referência** (como um FQA contra o Figma) e **checklist de acessibilidade WCAG 2.2**.
+
+Resultado: **13 defeitos novos**, com a suíte automatizada inteira verde. Dois deles **impedem a compra**: quem usa
+só teclado não chega ao carrinho, e o checkout aceita nome e CEP preenchidos só com espaços. Cada bug tem passo a
+passo, evidência anotada, impacto e a decisão justificada de virar ou não teste automatizado.
+
+👉 [**Ler o estudo de caso**](docs/qa-manual/README.md) · [Plano](docs/qa-manual/plano-de-teste.md) ·
+[Bugs](docs/qa-manual/bugs/) · [Checklist](docs/qa-manual/checklist.md)
 
 ---
 
@@ -155,6 +172,7 @@ flowchart LR
 │   └── dados/              # usuários, catálogo de produtos, clientes e mensagens do site
 ├── tests/                  # um spec por funcionalidade + mobile, acessibilidade e defeitos conhecidos
 ├── docs/                   # casos de teste e relatório de defeitos
+│   └── qa-manual/          # estudo de QA manual: plano, sessões, casos, bugs com evidência, checklist
 ├── scripts/                # rastreabilidade e resumo da execução no CI
 ├── .github/workflows/      # pipeline (qualidade → 5 projetos em paralelo → relatório → Pages)
 └── .claude/                # fluxo com IA: skills e artefatos das tarefas
